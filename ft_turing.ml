@@ -25,13 +25,6 @@ type machine_state = {
   cursor: int;
 }
 
-let make_initial_state machine input =
-  {
-    state = machine.initial;
-    input = input;
-    cursor = 0;
-  }
-
 exception Execute_Error of string
 
 (** Execute the next instruction based on a machine description and a machine state
@@ -52,11 +45,23 @@ let execute_next_step machine machine_state =
       | Right -> machine_state.cursor + 1
   }
 
+(** Execute all instructions in the input until we reach a final state
+Returns a new machine_state *)
 let rec execute_all machine machine_state =
   match List.find_opt (fun a -> a = machine_state.state) machine.finals with
   | Some (_) -> machine_state
   | None -> let new_state = execute_next_step machine machine_state
       in execute_all machine new_state
+
+(** Execute the input according to a machine description *)
+let execute_input machine input =
+  let machine_state = {
+    state = machine.initial;
+    input = input;
+    cursor = 0
+  } in
+  let res = execute_all machine machine_state in
+  Printf.printf "%s\n" res.input
 
 let machine = {
   name = "unary_sub";
@@ -86,7 +91,4 @@ let machine = {
                 ]
 }
 
-let machine_state = make_initial_state machine "1111-11=....."
-
-let res = execute_all machine machine_state
-let () = Printf.printf "%s\n" res.input
+let () = execute_input machine "1111-11=....."
