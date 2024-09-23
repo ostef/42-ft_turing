@@ -38,6 +38,7 @@ let print_transition state transition =
     (match transition.action with |Left -> "LEFT" |Right -> "RIGHT")
 
 let print_machine machine =
+  printf "Machine %s\n" machine.name ;
   printf "Alphabet: [ " ;
   List.iter (printf "%c ") machine.alphabet ;
   printf "]\n" ;
@@ -50,6 +51,12 @@ let print_machine machine =
   printf "]\n" ;
   StringMap.iter (fun key list -> List.iter (print_transition key) list) machine.transitions
 
+let print_machine_state state transition =
+  printf "[" ;
+  String.iteri (fun i c -> if i = state.cursor then printf "<%c>" c else printf "%c" c) state.input ;
+  printf "] " ;
+  print_transition state.state transition
+
 (** Execute the next instruction based on a machine description and a machine state
 Returns the new machine_state *)
 let execute_next_step machine machine_state =
@@ -58,10 +65,11 @@ let execute_next_step machine machine_state =
     | Some (x) -> x in
   let cur_char = machine_state.input.[machine_state.cursor] in
   let transition = List.find (fun a -> a.read = cur_char ) transitions in
+  print_machine_state machine_state transition ;
   {
     state = transition.to_state;
     input = String.mapi
-        (fun index c -> if index = machine_state.cursor then transition.write else c)
+        (fun i c -> if i = machine_state.cursor then transition.write else c)
         machine_state.input;
     cursor = match transition.action with
       | Left -> machine_state.cursor - 1
@@ -78,13 +86,15 @@ let rec execute_all machine machine_state =
 
 (** Execute the input according to a machine description *)
 let execute_input machine input =
-  let () = print_machine machine in
+  print_machine machine ;
+  printf "**********************************************************\n" ;
   let machine_state = {
     state = machine.initial;
     input = input;
     cursor = 0
   } in
   let res = execute_all machine machine_state in
+  printf "**********************************************************\n" ;
   printf "%s\n" res.input
 
 let machine = {
