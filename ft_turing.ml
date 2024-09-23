@@ -28,7 +28,7 @@ type machine_state = {
 exception Execute_Error of string
 
 (** Execute the next instruction based on a machine description and a machine state
-Returns a new machine_state *)
+Returns the new machine_state *)
 let execute_next_step machine machine_state =
   let transitions = match StringMap.find_opt machine_state.state machine.transitions with
     | None -> raise (Execute_Error "Unknown state")
@@ -46,7 +46,7 @@ let execute_next_step machine machine_state =
   }
 
 (** Execute all instructions in the input until we reach a final state
-Returns a new machine_state *)
+Returns the new machine_state *)
 let rec execute_all machine machine_state =
   match List.find_opt (fun a -> a = machine_state.state) machine.finals with
   | Some (_) -> machine_state
