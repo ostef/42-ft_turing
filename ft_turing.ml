@@ -58,7 +58,7 @@ let print_machine_state state transition =
   print_transition state.state transition
 
 (** Execute the next instruction based on a machine description and a machine state
-Returns the new machine_state *)
+Returns a new machine_state *)
 let execute_next_step machine machine_state =
   let transitions = match StringMap.find_opt machine_state.state machine.transitions with
     | None -> raise (Execute_Error "Unknown state")
@@ -77,7 +77,7 @@ let execute_next_step machine machine_state =
   }
 
 (** Execute all instructions in the input until we reach a final state
-Returns the new machine_state *)
+Returns a new machine_state *)
 let rec execute_all machine machine_state =
   match List.find_opt (fun a -> a = machine_state.state) machine.finals with
   | Some (_) -> machine_state
@@ -89,7 +89,7 @@ let execute_input machine input =
   print_machine machine ;
   printf "**********************************************************\n" ;
   let machine_state = {
-    state = machine.initial;
+    state =machine.initial;
     input = input;
     cursor = 0
   } in
@@ -125,4 +125,4 @@ let machine = {
                 ]
 }
 
-let () = execute_input machine "1111-11=....."
+let () = execute_input machine "1111-11"
