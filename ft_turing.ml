@@ -1,8 +1,10 @@
+open Printf
+
 module StringMap = Map.Make(String)
 
 type machine_action = Left | Right
 
-type machine_transition = {
+type transition = {
   read: char;
   to_state: string;
   write: char;
@@ -16,7 +18,7 @@ type machine = {
   states: string list;
   initial: string;
   finals: string list;
-  transitions: machine_transition list StringMap.t;
+  transitions: transition list StringMap.t;
 }
 
 type machine_state = {
@@ -27,8 +29,29 @@ type machine_state = {
 
 exception Execute_Error of string
 
+let print_transition state transition =
+  printf "(%s, %c) -> (%s, %c, %s)\n"
+    state
+    transition.read
+    transition.to_state
+    transition.write
+    (match transition.action with |Left -> "LEFT" |Right -> "RIGHT")
+
+let print_machine machine =
+  printf "Alphabet: [ " ;
+  List.iter (printf "%c ") machine.alphabet ;
+  printf "]\n" ;
+  printf "States: [ " ;
+  List.iter (printf "%s ") machine.states ;
+  printf "]\n" ;
+  printf "Initial: %s\n" machine.initial ;
+  printf "Finals: [ " ;
+  List.iter (printf "%s ") machine.finals ;
+  printf "]\n" ;
+  StringMap.iter (fun key list -> List.iter (print_transition key) list) machine.transitions
+
 (** Execute the next instruction based on a machine description and a machine state
-Returns the new machine_state *)
+Returns a new machine_state *)
 let execute_next_step machine machine_state =
   let transitions = match StringMap.find_opt machine_state.state machine.transitions with
     | None -> raise (Execute_Error "Unknown state")
@@ -46,7 +69,7 @@ let execute_next_step machine machine_state =
   }
 
 (** Execute all instructions in the input until we reach a final state
-Returns the new machine_state *)
+Returns a new machine_state *)
 let rec execute_all machine machine_state =
   match List.find_opt (fun a -> a = machine_state.state) machine.finals with
   | Some (_) -> machine_state
@@ -55,13 +78,14 @@ let rec execute_all machine machine_state =
 
 (** Execute the input according to a machine description *)
 let execute_input machine input =
+  let () = print_machine machine in
   let machine_state = {
-    state = machine.initial;
+    state =machine.initial;
     input = input;
     cursor = 0
   } in
   let res = execute_all machine machine_state in
-  Printf.printf "%s\n" res.input
+  printf "%s\n" res.input
 
 let machine = {
   name = "unary_sub";
