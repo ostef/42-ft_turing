@@ -29,6 +29,20 @@ type machine_state = {
 
 exception Execute_Error of string
 
+(* Todo:
+check for duplicates in states
+for all states, check that read is in alphabet, write is in alphabet, to_state is in states,
+every state in states is defined in transitions, except for final states *)
+let is_machine_valid machine =
+  List.exists (fun char -> char = machine.blank) machine.alphabet &&
+  List.exists (fun state -> state = machine.initial) machine.states &&
+  List.for_all (fun final -> List.exists (fun state -> state = final) machine.states) machine.finals
+
+let is_input_valid machine input =
+  String.length input > 0 &&
+  input |> String.to_seq |> List.of_seq |>
+  List.for_all (fun char -> char <> machine.blank && List.exists (fun a -> a = char) machine.alphabet) 
+    
 let print_transition state transition =
   printf "(%s, %c) -> (%s, %c, %s)\n"
     state
@@ -78,9 +92,12 @@ let rec execute_all machine machine_state =
 
 (** Execute the input according to a machine description *)
 let execute_input machine input =
+  if not (is_machine_valid machine) then raise (Execute_Error "Invalid machine") ;
+  if not (is_input_valid machine input) then raise (Execute_Error "Invalid input") ;
   let () = print_machine machine in
+  
   let machine_state = {
-    state =machine.initial;
+    state = machine.initial;
     input = input;
     cursor = 0
   } in
@@ -115,4 +132,4 @@ let machine = {
                 ]
 }
 
-let () = execute_input machine "1111-11"
+let () = execute_input machine "1111-11="
