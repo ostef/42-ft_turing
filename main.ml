@@ -1,3 +1,6 @@
 let () =
-  let input = "1111=-" in
-  Ft_turing.execute_input Ft_turing.machine input
+  
+  let args = Sys.argv in
+  Parsing.parsing args;
+
+  (* peut etre retourner un array avec machine et input puis appeler execute_input? *)

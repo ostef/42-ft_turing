@@ -3,8 +3,10 @@ ft_turing.cmo : \
 ft_turing.cmx : \
     types.cmx
 main.cmo : \
-    ft_turing.cmo
+    parsing.cmo
 main.cmx : \
-    ft_turing.cmx
+    parsing.cmx
+parsing.cmo :
+parsing.cmx :
 types.cmo :
 types.cmx :

@@ -1,12 +1,12 @@
 module StringMap = Map.Make(String)
 
-type machine_action = Left | Right
+type action = Left | Right
 
 type transition = {
   read: char;
   to_state: string;
   write: char;
-  action: machine_action;
+  action: action;
 }
 
 type machine_state = {

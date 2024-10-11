@@ -64,7 +64,7 @@ let rec execute_all machine machine_state =
   | None -> let new_state = execute_next_step machine machine_state
       in execute_all machine new_state
 
-(** Execute the input according to a Main.machine description *)
+(** Execute the input according to a machine description *)
 let execute_input machine input =
   if not (is_machine_valid machine) then raise (Execute_Error "Invalid machine") ;
   if not (is_input_valid machine input) then raise (Execute_Error "Invalid input") ;
