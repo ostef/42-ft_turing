@@ -1,0 +1,10 @@
+ft_turing.cmo : \
+    types.cmo
+ft_turing.cmx : \
+    types.cmx
+main.cmo : \
+    ft_turing.cmo
+main.cmx : \
+    ft_turing.cmx
+types.cmo :
+types.cmx :

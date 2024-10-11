@@ -1,34 +1,22 @@
 open Printf
-
-module StringMap = Map.Make(String)
-
-type machine_action = Left | Right
-
-type transition = {
-  read: char;
-  to_state: string;
-  write: char;
-  action: machine_action;
-}
-
-type machine = {
-  name: string;
-  alphabet: char list;
-  blank: char;
-  states: string list;
-  initial: string;
-  finals: string list;
-  transitions: transition list StringMap.t;
-}
-
-type machine_state = {
-  state: string;
-  input: string;
-  cursor: int;
-}
+open Types
 
 exception Execute_Error of string
 
+(* Todo:
+check for duplicates in states
+for all states, check that read is in alphabet, write is in alphabet, to_state is in states,
+every state in states is defined in transitions, except for final states *)
+let is_machine_valid machine =
+  List.exists (fun char -> char = machine.blank) machine.alphabet &&
+  List.exists (fun state -> state = machine.initial) machine.states &&
+  List.for_all (fun final -> List.exists (fun state -> state = final) machine.states) machine.finals
+
+let is_input_valid machine input =
+  String.length input > 0 &&
+  input |> String.to_seq |> List.of_seq |>
+  List.for_all (fun char -> char <> machine.blank && List.exists (fun a -> a = char) machine.alphabet) 
+    
 let print_transition state transition =
   printf "(%s, %c) -> (%s, %c, %s)\n"
     state
@@ -76,11 +64,14 @@ let rec execute_all machine machine_state =
   | None -> let new_state = execute_next_step machine machine_state
       in execute_all machine new_state
 
-(** Execute the input according to a machine description *)
+(** Execute the input according to a Main.machine description *)
 let execute_input machine input =
+  if not (is_machine_valid machine) then raise (Execute_Error "Invalid machine") ;
+  if not (is_input_valid machine input) then raise (Execute_Error "Invalid input") ;
   let () = print_machine machine in
+  
   let machine_state = {
-    state =machine.initial;
+    state = machine.initial;
     input = input;
     cursor = 0
   } in
@@ -95,24 +86,22 @@ let machine = {
   initial = "scanright";
   finals = ["HALT"];
   transitions = StringMap.empty
-                |> StringMap.add "scanright" [
-                  {read='.';to_state="scanright";write='.';action=Right};
-                  {read='1';to_state="scanright";write='1';action=Right};
-                  {read='-';to_state="scanright";write='-';action=Right};
-                  {read='=';to_state="eraseone";write='.';action=Left}
-                ]
-                |> StringMap.add "eraseone" [
-                  {read='1';to_state="subone";write='=';action=Left};
-                  {read='-';to_state="HALT";write='.';action=Left}
-                ]
-                |> StringMap.add "subone" [
-                  {read='1';to_state="subone";write='1';action=Left};
-                  {read='-';to_state="skip";write='-';action=Left}
-                ]
-                |> StringMap.add "skip" [
-                  {read='.';to_state="skip";write='.';action=Left};
-                  {read='1';to_state="scanright";write='.';action=Right}
-                ]
+  |> StringMap.add "scanright" [
+    {read='.';to_state="scanright";write='.';action=Right};
+    {read='1';to_state="scanright";write='1';action=Right};
+    {read='-';to_state="scanright";write='-';action=Right};
+    {read='=';to_state="eraseone";write='.';action=Left}
+    ]
+    |> StringMap.add "eraseone" [
+      {read='1';to_state="subone";write='=';action=Left};
+      {read='-';to_state="HALT";write='.';action=Left}
+      ]
+      |> StringMap.add "subone" [
+        {read='1';to_state="subone";write='1';action=Left};
+        {read='-';to_state="skip";write='-';action=Left}
+        ]
+        |> StringMap.add "skip" [
+          {read='.';to_state="skip";write='.';action=Left};
+          {read='1';to_state="scanright";write='.';action=Right}
+          ]
 }
-
-let () = execute_input machine "1111-11"
