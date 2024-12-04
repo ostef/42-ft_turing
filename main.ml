@@ -1,6 +1,10 @@
-let () =
+let main () =
   
   let args = Sys.argv in
-  Parsing.parsing args;
+  let machine_and_input = Parsing.parsing args in
+  machine_and_input
 
-  (* peut etre retourner un array avec machine et input puis appeler execute_input? *)
+let () =
+  let result = main () in
+  ()
+  (* Printf.printf "Result: %s\n" result *)

@@ -17,7 +17,15 @@ LIBS = yojson
 
 OCAMLIBS = -package yojson -linkpkg
 
-all: check-libs depend $(PROGRAM)
+
+check-prog:
+	@echo "Checking if $(PROGRAM) already exists..."
+	@if [ -f $(PROGRAM) ]; then \
+		echo "$(PROGRAM) already exists. Please run 'make re' to rebuild."; \
+		exit 1; \
+	fi
+
+all: check-prog depend $(PROGRAM)
 
 $(PROGRAM): opt byt
 	ln -s $(PROGRAM).byt $(PROGRAM)
@@ -28,8 +36,8 @@ byt: $(PROGRAM).byt
 .PHONY: check-tools
 .PHONY: check-tools
 check-tools:
-	eval $(opam config env)
 	@echo "Checking for ocamlfind..."
+	eval `opam config env`
 	@if ! command -v ocamlfind &> /dev/null; then \
 		echo "ocamlfind is missing. Installing..."; \
 		opam install --yes ocamlfind; \
@@ -38,9 +46,9 @@ check-tools:
 	fi
 
 .PHONY: check-libs
-check-libs:
-	eval $(opam config env)
+check-libs: check-tools
 	@opam install ocamlfind yojson
+	eval `opam config env`
 	@echo "Checking for missing libraries..."
 	@for lib in $(LIBS); do \
 		if ! opam list --installed $$lib > /dev/null 2>&1; then \
@@ -94,4 +102,3 @@ include .depend
 # 			echo "$$lib est déjà installé."; \
 # 		fi \
 # 	done
-
