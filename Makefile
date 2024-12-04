@@ -2,7 +2,7 @@
 PROGRAM = ft_turing
 
 # Fichiers sources
-SRC = types.ml machine.ml parsing.ml main.ml
+SRC = types.ml machine.ml parsing.ml ft_turing.ml main.ml
 
 # Compilateur
 OCAMLC = ocamlfind ocamlc

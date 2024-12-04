@@ -33,16 +33,16 @@ let print_machine machine =
 
     print_frame machine.name;
 		print_char_list "Alphabet" machine.alphabet;
-		(* print_string_list "States" machine.states;
+		print_string_list "States" machine.states;
 		Printf.printf "Initial: %s\n" machine.initial;
-		print_string_list "Finals" machine.finals; *)
+		print_string_list "Finals" machine.finals; 
 
-		(* List.iter (fun (state, transitions) ->
+		List.iter (fun (state, transitions) ->
 			List.iter (fun t ->
 				Printf.printf "(%s, %c) -> (%s, %c, %s)\n"
 					state t.read t.to_state t.write (convert_direction_to_string t.action)
 			) transitions
-		) machine.transitions; *)
+		) machine.transitions;
 
     let end_frame = String.make 80 '*' in
 		  Printf.printf "%s\n" end_frame;

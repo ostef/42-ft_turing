@@ -8,10 +8,13 @@ module StringSet = Set.Make(String)
 
 
 let extract_strings_from_json json name =
-  json |> member name |> to_list |> List.map to_string
+  let string_list = json |> member name |> to_list |> List.map to_string
+  in List.map (fun s -> String.sub s 1 (String.length s - 2)) string_list
+
 
 let extract_string_from_json json name =
-  json |> member name |> to_string
+  let s = json |> member name |> to_string in
+  String.sub s 1 (String.length s - 2)
 
 let convert_string_to_char s =
   if String.length s <> 1 then
@@ -33,7 +36,7 @@ let check_string_length s =
   len >= 1 && len <= 32
 
 let extract_and_validate_name json =
-  let name = json |> member "name" |> to_string in
+  let name = extract_string_from_json json "name" in
   if check_string_length name then
     name
   else
@@ -135,14 +138,34 @@ let validate_transitions transitions states =
   else
     Ok transitions
 
+let extract_read t =
+  let read = extract_string_from_json t "read" in
+  convert_string_to_char read
+
+let extract_to_state t =
+  let to_state = extract_string_from_json t "to_state" in
+  to_state
+
+let extract_write t =
+  let write = extract_string_from_json t "write" in
+  convert_string_to_char write
+
+let extract_action t =
+  let action = extract_string_from_json t "action" in
+  convert_string_to_action action
+
 let extract_and_validate_transitions json alphabet states finals =
   let transitions = json |> member "transitions" |> to_assoc |> List.map (fun (state, transitions) ->
     (state, transitions |> to_list |> List.map (fun t ->
-      {
-           read = t |> member "read" |> to_string |> convert_string_to_char;
-           to_state = t |> member "to_state" |> to_string;
-           write = t |> member "write" |> to_string |> convert_string_to_char;
-           action = t |> member "action" |> to_string |> convert_string_to_action;
+          let read = extract_read t in
+          let to_state = extract_to_state t in
+          let write = extract_write t in
+          let action = extract_action t in
+          {
+            read = read;
+            to_state = to_state;
+            write = write;
+            action = action;
           }
           ))
     )
@@ -166,9 +189,13 @@ let extract_and_validate_transitions json alphabet states finals =
 
 let machine_of_json json =
     let name = extract_and_validate_name json in
+    Printf.printf "Title: %s \n" name;
     let alphabet = extract_and_validate_alphabet json in
+    print_endline (String.concat "" (List.map (String.make 1) alphabet));
     let blank = extract_and_validate_blank json alphabet in
+    print_endline (String.make 1 blank);
     let states = extract_and_validate_states json in
+    print_endline (String.concat "" states);
     let initial = extract_and_validate_initial json states in
     let finals = extract_and_validate_finals json states in
     let transitions = extract_and_validate_transitions json alphabet states finals in
@@ -213,16 +240,16 @@ let get_input args pos_help =
   else
     args.(2)
     
-let machine_parsing args =
-  let pos_help = get_help args in
-  if Array.length args < 4  && pos_help = 1 then
-    exit 1
-  else if Array.length args < 3  && pos_help = -1 then
-    exit 1
-  else
-    let jsonfile = get_jsonfile args pos_help in
-    (* let machine = parse_jsonfile jsonfile in *)
-    let input = get_input args pos_help in
+let machine_parsing jsonfile =
     let machine = parse_jsonfile jsonfile in
-    Printf.printf "Machine.name: %s\n" (machine.name);
-    Printf.printf "Input: %s\n" input;
+    machine
+  
+let parse_input input alphabet blank =
+  if String.length input = 0 then
+    raise (Input_error "Input is empty")
+  else if not (List.for_all (fun c -> List.mem c alphabet) (List.init (String.length input) (String.get input))) then
+    raise (Input_error "Input contains symbols not in the alphabet")
+  else if String.contains input blank then
+    raise (Input_error "Input contains the blank symbol")
+  else
+    input

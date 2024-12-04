@@ -7,7 +7,7 @@ exception Execute_Error of string
 check for duplicates in states
 for all states, check that read is in alphabet, write is in alphabet, to_state is in states,
 every state in states is defined in transitions, except for final states *)
-let is_machine_valid machine =
+(* let is_machine_valid machine =
   List.exists (fun char -> char = machine.blank) machine.alphabet &&
   List.exists (fun state -> state = machine.initial) machine.states &&
   List.for_all (fun final -> List.exists (fun state -> state = final) machine.states) machine.finals
@@ -104,4 +104,7 @@ let machine = {
           {read='.';to_state="skip";write='.';action=Left};
           {read='1';to_state="scanright";write='.';action=Right}
           ]
-}
+} *)
+
+let execute_machine machine input =
+  print_endline (Printf.sprintf "Input: %s" input)
