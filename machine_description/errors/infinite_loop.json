@@ -1,0 +1,14 @@
+{
+	"name" : "infinite loop '12' ",
+	"alphabet": [ "1", ".", "2" ],
+	"blank" : ".",
+	"states" : [ "loop", "HALT" ],
+	"initial" : "loop",
+	"finals" : [ "HALT" ],
+	"transitions" : {
+		"loop": [
+			{ "read" : "1", "to_state": "loop", "write": "1", "action": "RIGHT"},
+			{ "read" : "2", "to_state": "loop", "write": "2", "action": "LEFT"}
+		]
+	}
+}

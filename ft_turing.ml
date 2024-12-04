@@ -97,7 +97,7 @@ let machine = {
       {read='-';to_state="HALT";write='.';action=Left}
       ]
       |> StringMap.add "subone" [
-        {read='1';to_state="subone";write='1';action=Left};
+        {read='1';to_state="subone";write='1';action= Left};
         {read='-';to_state="skip";write='-';action=Left}
         ]
         |> StringMap.add "skip" [

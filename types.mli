@@ -1,6 +1,4 @@
-module StringMap = Map.Make(String)
-
-let padding_size = 100 
+val padding_size : int
 
 type action = Left | Right
 
@@ -25,8 +23,8 @@ type machine = {
   initial: string;
   finals: string list;
   transitions: (string * transition list) list;
-  }
-  
+}
+
 exception Parsing_error of string
 exception Input_error of string
 exception Infinite_loop of string
