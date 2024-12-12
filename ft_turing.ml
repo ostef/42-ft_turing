@@ -56,28 +56,23 @@ let execute_next_step machine machine_state =
       | Right -> machine_state.cursor + 1
   }
 
-(** Execute all instructions in the input until we reach a final state
-Returns a new machine_state *)
-let rec execute_all machine machine_state =
-  match List.find_opt (fun a -> a = machine_state.state) machine.finals with
-  | Some (_) -> machine_state
-  | None -> let new_state = execute_next_step machine machine_state
-      in execute_all machine new_state
+  type machine = {
+    name: string;
+    alphabet: char list;
+    blank: char;
+    states: string list;
+    initial: string;
+    finals: string list;
+    transitions: transition list StringMap.t;
+  }
 
-(** Execute the input according to a machine description *)
-let execute_input machine input =
-  if not (is_machine_valid machine) then raise (Execute_Error "Invalid machine") ;
-  if not (is_input_valid machine input) then raise (Execute_Error "Invalid input") ;
-  let () = print_machine machine in
-  
-  let machine_state = {
-    state = machine.initial;
-    input = input;
-    cursor = 0
-  } in
-  let res = execute_all machine machine_state in
-  printf "%s\n" res.input
+  type machine_state = {
+    state: string;
+    input: string;
+    cursor: int;
+  }
 
+<<<<<<< HEAD:ft_turing.ml
 let machine = {
   name = "unary_sub";
   alphabet = ['1';'.';'-';'='];
@@ -104,6 +99,7 @@ let machine = {
           {read='.';to_state="skip";write='.';action=Left};
           {read='1';to_state="scanright";write='.';action=Right}
           ]
+<<<<<<< HEAD
 } *)
 
 let execute_machine machine input =

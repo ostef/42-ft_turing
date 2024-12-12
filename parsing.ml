@@ -191,11 +191,8 @@ let machine_of_json json =
     let name = extract_and_validate_name json in
     Printf.printf "Title: %s \n" name;
     let alphabet = extract_and_validate_alphabet json in
-    print_endline (String.concat "" (List.map (String.make 1) alphabet));
     let blank = extract_and_validate_blank json alphabet in
-    print_endline (String.make 1 blank);
     let states = extract_and_validate_states json in
-    print_endline (String.concat "" states);
     let initial = extract_and_validate_initial json states in
     let finals = extract_and_validate_finals json states in
     let transitions = extract_and_validate_transitions json alphabet states finals in
@@ -213,32 +210,6 @@ let parse_jsonfile jsonfile =
   let json = Yojson.Basic.from_file jsonfile in
   let machine = machine_of_json json in
   machine
-  
-let get_jsonfile args pos_help =
-  if pos_help = 1 then
-    args.(2)
-  else
-    args.(1)
-
-let get_help args =
-  if Array.length args > 1 && (args.(1) = "--help" || args.(1) = "-h") then
-    (Printf.printf "usage: ft_turing [-h] jsonfile input\n\
-      \n\
-      positional arguments:\n\
-      \ \ jsonfile \t \ json description of the machine\n\
-      \ \ input \t \ (optional) input of the machine\n\
-      \n\
-      optional arguments:\n\
-      \ \ -h, --help \t \ show this help message and exit\n";
-    1)
-  else
-    -1
-
-let get_input args pos_help =
-  if pos_help = 1 then
-    args.(3)
-  else
-    args.(2)
     
 let machine_parsing jsonfile =
     let machine = parse_jsonfile jsonfile in
