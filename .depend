@@ -1,12 +1,28 @@
 ft_turing.cmo : \
-    types.cmo
+    types.cmi
 ft_turing.cmx : \
     types.cmx
+machine.cmo : \
+    types.cmi
+machine.cmx : \
+    types.cmx
 main.cmo : \
-    parsing.cmo
+    types.cmi \
+    parsing.cmo \
+    machine.cmo \
+    ft_turing.cmo
 main.cmx : \
-    parsing.cmx
-parsing.cmo :
-parsing.cmx :
-types.cmo :
-types.cmx :
+    types.cmx \
+    parsing.cmx \
+    machine.cmx \
+    ft_turing.cmx
+parsing.cmo : \
+    types.cmi \
+    machine.cmo
+parsing.cmx : \
+    types.cmx \
+    machine.cmx
+types.cmo : \
+    types.cmi
+types.cmx : \
+    types.cmi

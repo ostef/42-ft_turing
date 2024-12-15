@@ -1,0 +1,14 @@
+{
+	"name" : "infinite run '1' ",
+	"alphabet": [ "1", "." ],
+	"blank" : ".",
+	"states" : [ "running", "HALT" ],
+	"initial" : "running",
+	"finals" : [ "HALT" ],
+	"transitions" : {
+		"running": [
+			{ "read" : "1", "to_state": "running", "write": "1", "action": "RIGHT"},
+			{ "read" : ".", "to_state": "running", "write": ".", "action": "RIGHT"}
+		]
+	}
+}
